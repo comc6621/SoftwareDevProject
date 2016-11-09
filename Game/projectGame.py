@@ -21,16 +21,21 @@ charSprite = pygame.image.load('MarioHead.jpeg')
 player_width = charSprite.get_rect()[2]
 player_height = charSprite.get_rect()[3]
 
-playerXPos = 155
 playerYPos = screen_height - 100 - player_height
-playerXSpeed = 10
 
 meteorImg = pygame.image.load('meteor.png')
 meteor_width = meteorImg.get_rect()[2]
 meteor_height = meteorImg.get_rect()[3]
-meteors = []
 
 menu_font = pygame.font.SysFont(None, 60)
+
+
+# Necessary to reset the variables for consecutive gameplay
+def setVars():
+    global playerXPos, playerXSpeed, meteors
+    playerXPos = 155
+    playerXSpeed = 10
+    meteors = []
 
 
 # quits program if appropriate
@@ -242,6 +247,7 @@ def startMenu():
 # Runs the start menu and then loops through the game
 def main():
     startMenu()
+    setVars()
     while not game_exit:
         makeMeteors()
         drawScreen()
@@ -251,6 +257,7 @@ def main():
 
         if dead:
             startMenu()
+            setVars()
 
     pygame.display.quit()
     pygame.quit()
