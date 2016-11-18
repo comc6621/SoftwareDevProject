@@ -1,0 +1,20 @@
+This is a todo list of all the things we need to get done on the game
+---------------------------------------------------------------------
+
+1) Implement a legitimate scoring system/update the user's score
+2) Pull scores from the database for the leaderboard
+3) Upload scores to the database
+4) Create users
+5) Create an actual background - scrolling for gameplay and static for menu/options
+6) Create an options menu
+7) Implement sound into the game / welcome screen
+8) Make game more object-oriented
+9) Add grace to collision detection
+10) Re-make images/sound so we don't get sued
+12) Increase rate of gameplay as score increases
+13) Fix glitch where you get stuck in side of screen
+14) Make game suck less
+15) Highlight text on scroll-over
+16) Make it so that impossible situations are impossible
+16) Add fire to meteors?
+17) Make background less glitchy (I have a good amount of Photoshop experience, so I'll do this)
