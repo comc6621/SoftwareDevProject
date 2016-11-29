@@ -21,7 +21,7 @@ pygame.init()
 pygame.mixer.init()
 fpsClock = pygame.time.Clock()
 
-MUSIC_FILE = "music.mp3"
+MUSIC_FILE = "gameplay.wav"
 options = options.Options()
 
 # Dead code from when all we had was one image. Now we're implementing sprite sheets
