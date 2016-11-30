@@ -4,6 +4,7 @@ from spritesheet import spritesheet
 import options
 import inputbox
 import sys
+import pymysql
 
 # global vars
 SCREEN_WIDTH = 800
@@ -373,8 +374,11 @@ def login():
 
 
 def databaseLogin(username, password):
-    print("This is where you connect to the database and log in!")
-
+    connect = pymysql.connect("localhost","id266249_mrrunner","password","id266249_runnerdb")
+    cur=connect.cursor()
+    cur.close()
+    connect.close()
+    print("Working")
 
 def createUser(username, password):
     print("This is the function where a user is created!")
