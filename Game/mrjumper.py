@@ -593,6 +593,7 @@ def main():
     while not game_exit:
         if options.start:
             startMenu()
+            
             if game_exit:
                 break
         play_music()
