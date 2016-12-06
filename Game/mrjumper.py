@@ -68,15 +68,28 @@ meteorImg = pygame.image.load('meteor.png')
 meteor_width = meteorImg.get_rect()[2]
 meteor_height = meteorImg.get_rect()[3]
 
+#more power up images - to be added
+# speed up
+# bomb
+# bonus points
+
 menu_font = pygame.font.SysFont(None, 60)
 
+#Powerups
+speedup = False;
+speedup_timer=0;
+bomb_count=0;
+max_bombs=3;
 
 # Necessary to reset the variables for consecutive gameplay
 def setVars():
-    global playerXPos, meteors, player_direction, score, background_location
+    global playerXPos, meteors, bombs, points, speedups, player_direction, score, background_location
     playerXPos = SCREEN_WIDTH//2
     options.player_velocity = options.player_speed
     meteors = []
+    bombs = []
+    points = []
+    speedups = []
     player_direction = 0
     score = 0
     background_location = SCREEN_HEIGHT-background_height
@@ -106,6 +119,18 @@ def makeMeteors():
     if random.randint(0, 20) == 0:
         meteors.append([random.randint(0, SCREEN_WIDTH-meteor_width), -meteor_height])
 
+def makeBombs():
+	if random.randint(0, 1000) == 0:
+		#add bomb
+		#bombs.append([random.randint(0,SCREEN_WIDTH-bomb_width), -bomb_height])
+
+def makeSpeedups():
+	if random.randint(0, 200) == 0:
+		#add speedup
+
+def makePoints():
+	if random.randint(0, 50) == 0:
+		#add points
 
 # Handles drawing all graphics for the screen
 def drawScreen():
@@ -127,7 +152,16 @@ def drawScreen():
 
     for meteor in meteors:
         display_surf.blit(meteorImg, meteor)
-
+	
+	for bomb in bombs:
+		#display bomb
+	
+	for speedup in speedups:
+		#display speedup
+		
+	for point in points:
+		#display point
+	
     score_text = menu_font.render("Your score: "+str(score), True, WHITE)
     score_rect = score_text.get_rect()
     score_rect.center = (SCREEN_WIDTH//2, 50)
@@ -144,6 +178,12 @@ def movePlayer():
     playerXPos += options.player_velocity
 
     background_location += options.background_speed
+    if speedup:
+		background_location+=5;
+		speedup_timer--;
+		if speedup_timer==0:
+			speedup = False
+	
     if background_location >= 2:
         background_location = SCREEN_HEIGHT - background_height
     for meteor in meteors:
@@ -165,6 +205,13 @@ def collisionDetection():
             return True
         elif meteor[1] > SCREEN_HEIGHT:
             del meteors[0]
+            
+    for bomb in bombs:
+	
+	for speedup in speedups:
+	
+	for point in points:
+		
     return False
 
 

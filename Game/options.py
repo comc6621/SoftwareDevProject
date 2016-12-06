@@ -5,7 +5,7 @@ import pygame
 class Options:
     def __init__(self):
         self.mute = False
-        self.max_difficulty = 3
+        self.max_difficulty = 4
         self.difficulty = 0
         self.meteor_speed = 5
         self.player_speed = 10
