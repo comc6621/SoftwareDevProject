@@ -25,6 +25,9 @@ fpsClock = pygame.time.Clock()
 MUSIC_FILE = "gameplay.wav"
 options = options.Options()
 
+#Conors Stuff
+userID=7
+
 # Dead code from when all we had was one image. Now we're implementing sprite sheets
 # charSprite = pygame.image.load('MarioHead.jpeg')
 # player_width = charSprite.get_rect()[2]
@@ -345,7 +348,7 @@ def login():
             validated_pass = inputbox.ask(display_surf, "")
             step += 1
             if password == validated_pass:
-                createUser(username, password)
+                createUser(username, password,userID)
                 success_message = "You successfully created a user!"
             else:
                 success_message = "Sorry! Passwords did not match!"
@@ -381,16 +384,18 @@ def databaseLogin(username, password):
     connect.close()
     print("Working")
 
-def createUser(username, password):
+def createUser(username, password,userID):
     connect = pymysql.connect(host= 'localhost', user='root', passwd='password', db='my')
     cur=connect.cursor()
-    cur.execute("select exists(select * from tbl_user where user_username='"+username+"' and user_password='"+password+"')")
+    userIDString=str(userID)
+    cur.execute("insert into tbl_user (user_id,user_name,user_username,user_password) values ("+userIDString+",'"+username+"','"+username+"','"+password+"')")
+    userID+=1
     cur.close()
     connect.close()
     print("Working")
 
 def logout():
-
+    print("Stuff")
 
 # This function show the settings that the user can edit
 def options_menu():
