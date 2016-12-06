@@ -79,10 +79,10 @@ meteor_height = meteorImg.get_rect()[3]
 menu_font = pygame.font.SysFont(None, 60)
 
 #Powerups
-speedup = False;
-speedup_timer=0;
-bomb_count=0;
-max_bombs=3;
+speedup = False
+speedup_timer = 0
+bomb_count = 0
+max_bombs = 3
 
 # Necessary to reset the variables for consecutive gameplay
 def setVars():
@@ -183,7 +183,7 @@ def drawScreen():
 
 # Updates player and meteor positions and the background
 def movePlayer():
-    global playerXPos, background_location
+    global playerXPos, background_location, speedup
     playerXPos += options.player_velocity
 
     background_location += options.background_speed
@@ -217,7 +217,7 @@ def collisionDetection():
             
     for bomb in bombs:
         continue
-    for speedup in speedups:
+    for speedup1 in speedups:
         continue
     for point in points:
         continue
