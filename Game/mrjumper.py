@@ -374,18 +374,22 @@ def login():
 
 
 def databaseLogin(username, password):
-    connect = pymysql.connect("localhost","id266249_mrrunner","password","id266249_runnerdb")
+    connect = pymysql.connect(host= 'localhost', user='root', passwd='password', db='my')
     cur=connect.cursor()
+    cur.execute("select exists(select * from tbl_user where user_username='"+username+"' and user_password='"+password+"')")
     cur.close()
     connect.close()
     print("Working")
 
 def createUser(username, password):
-    print("This is the function where a user is created!")
-
+    connect = pymysql.connect(host= 'localhost', user='root', passwd='password', db='my')
+    cur=connect.cursor()
+    cur.execute("select exists(select * from tbl_user where user_username='"+username+"' and user_password='"+password+"')")
+    cur.close()
+    connect.close()
+    print("Working")
 
 def logout():
-    print("This is the function that communicates with the database to logout")
 
 
 # This function show the settings that the user can edit
