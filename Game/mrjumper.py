@@ -123,18 +123,21 @@ def makeMeteors():
         meteors.append([random.randint(0, SCREEN_WIDTH-meteor_width), -meteor_height])
 
 def makeBombs():
-	if random.randint(0, 1000) == 0:
-		#add bomb
-		#bombs.append([random.randint(0,SCREEN_WIDTH-bomb_width), -bomb_height])
+    if random.randint(0, 1000) == 0:
+        #add bomb
+        #bombs.append([random.randint(0,SCREEN_WIDTH-bomb_width), -bomb_height])
+        return
+    
+
 
 def makeSpeedups():
-	if random.randint(0, 200) == 0:
-		#add speedup
-
+    if random.randint(0, 200) == 0:
+        #add speedup
+        return
 def makePoints():
-	if random.randint(0, 50) == 0:
-		#add points
-
+    if random.randint(0, 50) == 0:
+        #add points
+        return
 # Handles drawing all graphics for the screen
 def drawScreen():
     global count_frames, which_sprite, score
@@ -155,16 +158,19 @@ def drawScreen():
 
     for meteor in meteors:
         display_surf.blit(meteorImg, meteor)
-	
-	for bomb in bombs:
-		#display bomb
-	
-	for speedup in speedups:
-		#display speedup
-		
-	for point in points:
-		#display point
-	
+    
+    for bomb in bombs:
+        #display bomb
+        continue
+    
+    for speedup in speedups:
+        #display 
+        continue
+        
+    for point in points:
+        #display point
+        continue
+    
     score_text = menu_font.render("Your score: "+str(score), True, WHITE)
     score_rect = score_text.get_rect()
     score_rect.center = (SCREEN_WIDTH//2, 50)
@@ -182,11 +188,11 @@ def movePlayer():
 
     background_location += options.background_speed
     if speedup:
-		background_location+=5;
-		speedup_timer--;
-		if speedup_timer==0:
-			speedup = False
-	
+        background_location+=5;
+        speedup_timer-=1;
+        if speedup_timer==0:
+            speedup = False
+    
     if background_location >= 2:
         background_location = SCREEN_HEIGHT - background_height
     for meteor in meteors:
@@ -210,11 +216,11 @@ def collisionDetection():
             del meteors[0]
             
     for bomb in bombs:
-	
-	for speedup in speedups:
-	
-	for point in points:
-		
+        continue
+    for speedup in speedups:
+        continue
+    for point in points:
+        continue
     return False
 
 
