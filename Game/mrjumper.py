@@ -71,6 +71,22 @@ meteorImg = pygame.image.load('meteor.png')
 meteor_width = meteorImg.get_rect()[2]
 meteor_height = meteorImg.get_rect()[3]
 
+#change these images
+speedupImg = pygame.image.load('Rocket.png')
+speedup_width = speedupImg.get_rect()[2]
+speedup_height = speedupImg.get_rect()[3]
+
+bombImg = pygame.image.load('Bomb.png')
+bomb_width = bombImg.get_rect()[2]
+bomb_height = bombImg.get_rect()[3]
+
+pointsImg = pygame.image.load('Star.png')
+points_width = pointsImg.get_rect()[2]
+points_height = pointsImg.get_rect()[3]
+
+shrapnelImg = pygame.image.load('testImage4.png')
+shrapnel_width = shrapnelImg.get_rect()[2]
+shrapnel_height = shrapnelImg.get_rect()[3]
 #more power up images - to be added
 # speed up
 # bomb
@@ -79,20 +95,21 @@ meteor_height = meteorImg.get_rect()[3]
 menu_font = pygame.font.SysFont(None, 60)
 
 #Powerups
-speedup = False
+speedup_active = False
 speedup_timer = 0
-bomb_count = 0
+bomb_count = 3
 max_bombs = 3
 
 # Necessary to reset the variables for consecutive gameplay
 def setVars():
-    global playerXPos, meteors, bombs, points, speedups, player_direction, score, time, distance, background_location
+    global playerXPos, meteors, bombs, points, speedups,shrapnel, player_direction, score, time, distance, background_location
     playerXPos = SCREEN_WIDTH//2
     options.player_velocity = options.player_speed
     meteors = []
     bombs = []
     points = []
     speedups = []
+    shrapnel = []
     player_direction = 0
     score = 0
     background_location = SCREEN_HEIGHT-background_height
@@ -100,7 +117,7 @@ def setVars():
 
 # quits program if appropriate
 def eventHandler():
-    global game_exit, player_direction
+    global game_exit, player_direction, bomb_count
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_exit = True
@@ -116,7 +133,18 @@ def eventHandler():
                 options.changePause()
             elif event.key == pygame.K_ESCAPE:
                 game_exit = True
-
+            elif event.key == pygame.K_SPACE:
+                if(bomb_count>0):
+                    bomb_count-=1
+                    deleteObjects()
+                    makeShrapnel()
+                
+def deleteObjects():
+    global meteors, bombs, speedups, points
+    meteors=[]
+    bombs=[]
+    speedups=[]
+    points=[]
 
 def makeMeteors():
     if random.randint(0, 20) == 0:
@@ -124,20 +152,26 @@ def makeMeteors():
 
 def makeBombs():
     if random.randint(0, 1000) == 0:
-        #add bomb
-        #bombs.append([random.randint(0,SCREEN_WIDTH-bomb_width), -bomb_height])
-        return
+        bombs.append([random.randint(0,SCREEN_WIDTH-bomb_width), -bomb_height])
 
 
 
 def makeSpeedups():
     if random.randint(0, 200) == 0:
-        #add speedup
-        return
+        speedups.append([random.randint(0,SCREEN_WIDTH-bomb_width),-bomb_height])
+
+
 def makePoints():
     if random.randint(0, 50) == 0:
-        #add points
-        return
+        points.append([random.randint(0,SCREEN_WIDTH-points_width),-points_width])
+
+def makeShrapnel():
+    i = 0
+    while(i<5):
+        shrapnel.append([playerXPos-shrapnel_width/2, PLAYER_Y_POS-shrapnel_height/2])
+        i+=1
+
+
 # Handles drawing all graphics for the screen
 def drawScreen():
     global count_frames, which_sprite, score
@@ -160,16 +194,16 @@ def drawScreen():
         display_surf.blit(meteorImg, meteor)
 
     for bomb in bombs:
-        #display bomb
-        continue
+        display_surf.blit(bombImg, bomb)
 
     for speedup in speedups:
-        #display
-        continue
+        display_surf.blit(speedupImg,speedup)
 
     for point in points:
-        #display point
-        continue
+        display_surf.blit(pointsImg,point)
+        
+    for piece in shrapnel:
+        display_surf.blit(shrapnelImg,piece)
 
     score_text = menu_font.render("Your score: "+str(score), True, WHITE)
     score_rect = score_text.get_rect()
@@ -183,27 +217,48 @@ def drawScreen():
 
 # Updates player and meteor positions and the background
 def movePlayer():
-    global playerXPos, background_location, speedup
+    global playerXPos, background_location, speedup_active
     playerXPos += options.player_velocity
 
     background_location += options.background_speed
-    if speedup:
-        background_location+=5;
+    if speedup_active:
+        #background_location+=5;
         speedup_timer-=1;
         if speedup_timer==0:
-            speedup = False
+            speedup_active = False
 
     if background_location >= 2:
         background_location = SCREEN_HEIGHT - background_height
     for meteor in meteors:
         meteor[1] += options.meteor_speed
-
+    for speedup in speedups:
+        speedup[1] += options.speedup_speed
+    for bomb in bombs:
+        bomb[1] += options.bomb_speed
+    
+    i=0
+    for piece in shrapnel:
+        if i%5==0:
+            piece[0]-=20
+            piece[1]-=10
+        elif i%5==1:
+            piece[0]-=10
+            piece[1]-=20
+        elif i%5==2:
+            piece[1]-=30
+        elif i%5==3:
+            piece[0]+=10
+            piece[1]-=20
+        elif i%5==4:
+            piece[0]+=20
+            piece[1]-=10
+        i+=1
 
 # First checks if player is at the edge of the screen to bounce back the other way
 # Then checks if a meteor has hit the player
 # Then check if a meteor has gone off the screen!
 def collisionDetection():
-    global player_direction, playerXPos
+    global player_direction, playerXPos, bomb_count, shrapnel
     if playerXPos+PLAYER_WIDTH >= SCREEN_WIDTH or playerXPos <= 0:
         options.player_velocity *= -1
         player_direction = not player_direction
@@ -216,11 +271,38 @@ def collisionDetection():
             del meteors[0]
 
     for bomb in bombs:
-        continue
-    for speedup1 in speedups:
-        continue
+        if (bomb[0] <= playerXPos+PLAYER_WIDTH and bomb[0]+bomb_width >= playerXPos) and\
+                (bomb[1] <= PLAYER_Y_POS+PLAYER_HEIGHT and bomb[1]+bomb_height >= PLAYER_Y_POS):
+            if(bomb_count<max_bombs):
+                bomb_count+=1
+            #change this
+            del bombs[0]
+        elif bomb[1] > SCREEN_HEIGHT:
+            del bombs[0]
+    for speedup in speedups:
+        if (speedup[0] <= playerXPos+PLAYER_WIDTH and speedup[0]+speedup_width >= playerXPos) and\
+                (speedup[1] <= PLAYER_Y_POS+PLAYER_HEIGHT and speedup[1]+speedup_height >= PLAYER_Y_POS):
+            #activate speedup
+            speedup_active=True
+            speedup_timer=100 #not sure whats appropriate here
+            #change this
+            del speedups[0]
+        elif speedup[1] > SCREEN_HEIGHT:
+            del speedups[0]
     for point in points:
-        continue
+        if (point[0] <= playerXPos+PLAYER_WIDTH and point[0]+points_width >= playerXPos) and\
+                (point[1] <= PLAYER_Y_POS+PLAYER_HEIGHT and point[1]+points_height >= PLAYER_Y_POS):
+            score+=5
+            #change this
+            del points[0]
+        elif point[1] > SCREEN_HEIGHT:
+            del points[0]
+    shrap = []
+    for piece in shrapnel:
+        if not (piece[0]+shrapnel_width/2 < 0 or piece[0]+shrapnel_width/2 >= SCREEN_WIDTH or piece[1]+shrapnel_width/2 < 0):
+            shrap.append(piece)
+    
+    shrapnel=shrap
     return False
 
 
@@ -703,13 +785,16 @@ def main():
                 break
         play_music()
         makeMeteors()
+        makeBombs()
+        makeSpeedups()
+        makePoints()
         drawScreen()
         movePlayer()
         eventHandler()
         dead = collisionDetection()
 
         if dead:
-            updateScore(userID, score)
+            #updateScore(userID, score)
             pygame.mixer.music.stop()
             hasLost()
 
