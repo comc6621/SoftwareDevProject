@@ -26,7 +26,7 @@ MUSIC_FILE = "gameplay.wav"
 options = options.Options()
 
 #Conors Stuff
-userID=7
+userID=""
 
 # Dead code from when all we had was one image. Now we're implementing sprite sheets
 # charSprite = pygame.image.load('MarioHead.jpeg')
@@ -127,7 +127,7 @@ def makeBombs():
         #add bomb
         #bombs.append([random.randint(0,SCREEN_WIDTH-bomb_width), -bomb_height])
         return
-    
+
 
 
 def makeSpeedups():
@@ -158,19 +158,19 @@ def drawScreen():
 
     for meteor in meteors:
         display_surf.blit(meteorImg, meteor)
-    
+
     for bomb in bombs:
         #display bomb
         continue
-    
+
     for speedup in speedups:
-        #display 
+        #display
         continue
-        
+
     for point in points:
         #display point
         continue
-    
+
     score_text = menu_font.render("Your score: "+str(score), True, WHITE)
     score_rect = score_text.get_rect()
     score_rect.center = (SCREEN_WIDTH//2, 50)
@@ -192,7 +192,7 @@ def movePlayer():
         speedup_timer-=1;
         if speedup_timer==0:
             speedup = False
-    
+
     if background_location >= 2:
         background_location = SCREEN_HEIGHT - background_height
     for meteor in meteors:
@@ -214,7 +214,7 @@ def collisionDetection():
             return True
         elif meteor[1] > SCREEN_HEIGHT:
             del meteors[0]
-            
+
     for bomb in bombs:
         continue
     for speedup1 in speedups:
@@ -274,10 +274,32 @@ def about():
 
 
 # This function displays the leaders on the leaderboard
+def updateleaderboard():
+    connect = pymysql.connect(host= '31.220.17.250', user='mrrunner_user', passwd='password', db='mrrunner_mrrunner')
+    cur=connect.cursor()
+    cur.execute("create or replace view highScores as select user_username, high_score from tbl_user left join tbl_pStats on tbl_user.user_id=tbl_pStats.user_id")
+    cur.execute("select * from highScores order by high_score desc limit 5")
+    high_scoreData=cur.fetchall()
+    connect.commit()
+    cur.close()
+    connect.close()
+    print(high_scoreData)
+    return high_scoreData
+
+
 def leaderboard():
     global game_exit
-    leaders = ["1) Matt Niemiec  1575", "2) Kobe Bryant   500", "3) Peyton Manning   450", "4) Aaron Gwin   300",
-               "5) Link   5"]
+    tup = updateleaderboard()
+    mylist=[]
+    count=1
+    for i in tup:
+        c=str(count)
+        w=str(i[0])
+        e= str(i[1])
+        mylist.append(c+") "+w+"  "+e)
+        count+=1
+    leaders=mylist
+    #leaders = ["1) Matt Niemiec  1575", "2) Kobe Bryant   500", "3) Peyton Manning   450", "4) Aaron Gwin   300", "5) Link   5"]
     spacing = 50
     space = 100
     play_text = []
@@ -401,7 +423,8 @@ def login():
             validated_pass = inputbox.ask(display_surf, "")
             step += 1
             if password == validated_pass:
-                createUser(username, password,userID)
+                createUser(username, password)
+                databaseLogin(username,password)
                 success_message = "You successfully created a user!"
             else:
                 success_message = "Sorry! Passwords did not match!"
@@ -430,22 +453,29 @@ def login():
 
 
 def databaseLogin(username, password):
-    connect = pymysql.connect(host= 'localhost', user='root', passwd='password', db='my')
+    connect = pymysql.connect(host= '31.220.17.250', user='mrrunner_user', passwd='password', db='mrrunner_mrrunner')
     cur=connect.cursor()
-    cur.execute("select exists(select * from tbl_user where user_username='"+username+"' and user_password='"+password+"')")
+    cur.execute("select * from tbl_user where user_username='"+username+"' and user_password='"+password+"'")
+    message=cur.fetchone()
+    if not message:
+        print ("Wrong login")#MATT THROW UP WINDOW
+    else:
+        print("Logged in!")#MATT THOW UP WINDOW
+        global userID
+        userID=message[0]
+        print (userID)
+        connect.commit()
     cur.close()
     connect.close()
-    print("Working")
 
-def createUser(username, password,userID):
-    connect = pymysql.connect(host= 'localhost', user='root', passwd='password', db='my')
+def createUser(username, password):
+    connect = pymysql.connect(host= '31.220.17.250', user='mrrunner_user', passwd='password', db='mrrunner_mrrunner')
     cur=connect.cursor()
     userIDString=str(userID)
-    cur.execute("insert into tbl_user (user_id,user_name,user_username,user_password) values ("+userIDString+",'"+username+"','"+username+"','"+password+"')")
-    userID+=1
+    cur.execute("insert into tbl_user (user_name,user_username,user_password) values ('"+username+"','"+username+"','"+password+"')")
+    connect.commit()
     cur.close()
     connect.close()
-    print("Working")
 
 def logout():
     print("Stuff")
@@ -653,13 +683,22 @@ def startMenu():
         pygame.display.update()
         fpsClock.tick(FPS)
 
-
+def updateScore(userID, score):
+    connect = pymysql.connect(host= '31.220.17.250', user='mrrunner_user', passwd='password', db='mrrunner_mrrunner')
+    cur=connect.cursor()
+    userIDString=str(userID)
+    scorString=str(score)
+    cur.execute("insert into tbl_pStats (user_id,high_score) values ("+userIDString+","+scorString+") on duplicate key update high_score="+scorString+"")
+    connect.commit()
+    cur.close()
+    connect.close()
 # Runs the start menu and then loops through the game
+
 def main():
     while not game_exit:
         if options.start:
             startMenu()
-            
+
             if game_exit:
                 break
         play_music()
@@ -670,6 +709,7 @@ def main():
         dead = collisionDetection()
 
         if dead:
+            updateScore(userID, score)
             pygame.mixer.music.stop()
             hasLost()
 
