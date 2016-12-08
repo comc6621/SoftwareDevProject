@@ -86,7 +86,7 @@ max_bombs = 3
 
 # Necessary to reset the variables for consecutive gameplay
 def setVars():
-    global playerXPos, meteors, bombs, points, speedups, player_direction, score, background_location
+    global playerXPos, meteors, bombs, points, speedups, player_direction, score, time, distance, background_location
     playerXPos = SCREEN_WIDTH//2
     options.player_velocity = options.player_speed
     meteors = []
