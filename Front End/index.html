@@ -5,19 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="assets/ico/favicon.png">
 
-    <title>Mr. Jumper</title>
+    <title>Mr. Runner</title>
 
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
+	
+	<!-- PHP to load scoreboard -->
+	<link href = "assets/php/UserLogin.php">
+	<link href = "assets/php/Leaderboard.php">
 
-    <!-- Custom styles for this template -->
     <link href="assets/css/main.css" rel="stylesheet">
+	<link href="assets/css/custom.css" rel="stylesheet">
 	<link rel="stylesheet" href="assets/css/font-awesome.min.css">
 
     <script src="assets/js/jquery.min.js"></script>
-	<script src="assets/js/modernizr.custom.js"></script>
+	<!-- <script src="assets/js/modernizr.custom.js"></script> -->
 	
 
 	
@@ -36,11 +39,11 @@
 	<!-- Menu -->
 	<nav class="menu" id="theMenu">
 		<div class="menu-wrap">
-			<h1 class="logo"><a href="index.html#home">Mr. Jumper</a></h1>
+			<h1 class="logo"><a href="index.html#home">Mr. Runner</a></h1>
 			<i class="icon-remove menu-close"></i>
 			<a href="#leaderboard" class="smoothScroll">Leaderboard</a>
 			<a href="#login" class="smoothScroll">Log In</a>
-			<a href="#download" class="smoothScroll">How To Play</a>
+			<a href="#download" class="smoothScroll">Download</a>
 			<a href="#"><i class="icon-facebook"></i></a>
 			<a href="#"><i class="icon-twitter"></i></a>
 			<a href="#"><i class="icon-dribbble"></i></a>
@@ -54,7 +57,7 @@
 
 	
 	<!-- ========== LEADERBOARD SECTION ========== -->
-	<section id="leaderboard" name="leaderboard"></section>
+	<section id="leaderboardSection" name="leaderboardSection"></section>
 	<div id="headerwrap">
 		<div class="container">
 			<div class="logo">
@@ -62,10 +65,19 @@
 			</div>
 			<br>
 			<div class="row">
-				<h1>Dodge the stuff</h1>
+				<h1>Mr Runner</h1>
 				<br>
-				<h3>Brief description about the game</h3>
+				<h3>Here's the best runners. See if you can keep up!</h3>
 				<br>
+				<table id="leaderboard">
+					<tbody>
+						<tr>
+							<th>Username</th>
+							<th>High Scores</th>
+						</tr>
+											
+					</tbody>
+				</table>
 				<br>
 				<div class="col-lg-6 col-lg-offset-3">
 				</div>
@@ -81,15 +93,27 @@
 		<div class="container">
 			<div class="row">
 				<h3>Log In</h3>
-				<p class="centered"><i class="icon icon-circle"></i><i class="icon icon-circle"></i><i class="icon icon-circle"></i></p>
 				
-				<!-- INTRO INFORMATIO-->
+				<!-- INTRO INFORMATION-->
 				<div class="col-lg-6 col-lg-offset-3">
-					<p>A full time theme crafter based in Madrid, Spain. I love designing beautiful, clean and user-friendly interfaces for websites.</p>
-					<p>My passion is turning good ideas and products into eye-catching sites.</p>
-					<p>Sometimes I blog about design and web trends. Also I share links and my thoughts on <a href="http://twitter.com/BlackTie_co">Twitter</a>. Need a free handsome bootstrap theme? <a href="http://blacktie.co">Done!</a></p>
-					<p>I'm available for freelance jobs. Contact me now.</p>
-					<p><button type="button" class="btn btn-warning">I HAVE A FREELANCE JOB</button></p>
+					<p>Enter username and password to view your personal score history.</p>
+					<form>
+						Username: <br>
+						<input type="text" id="user"><br>
+						Password: <br>
+						<input type="password" id="password"><br>
+						<br>
+						<button type="button" id="submit" class="btn btn-warning">Submit</button>
+					</form>
+					<br>
+					<table id="userScores">
+						<tbody>		
+							<tr>
+								<th>User</th>
+								<th>Score</th>
+							</tr>
+						</tbody>
+					</table>
 				</div>								
 			</div>
 		</div><!-- /container -->
@@ -113,10 +137,61 @@
 	</div>
 
 	
-
+	<script id="source" language="javascript" type="text/javascript">
+	$("#submit").click(function(){
+		if ($('#password').val() == ''){
+			alert("Please enter username and password!");
+		}
+		else{		
+			$('#userScores').toggle();
+			var user = $('#user').val();
+			var someScores = [255, 203, 167, 140, 130, 125, 107, 44, 23, 19]
+			for (i=0; i < 10; i++){
+				score = someScores[i];
+				$('#userScores tr:last').after('<tr><td>' + user + '</td><td>' + score + '</td></tr>');
+			}
+		}
+	});
+	
+	/*Deprecated because the shit don't work
+	User Scores Load Function
+	$("#submit").click(function(){
+		$.ajax({
+			type: "POST",
+			url: 'UserLogin.php',
+			data: {"username: "+$('#username').html(), "password: "+$('#pwd').html()},
+			dataType: 'json',
+			success: function(data){
+				var i;
+				for (i=0; i<data.length(); i++){
+					$('#userScores tr:last').after('<tr><td>' + data[0] + '</td></tr>;);
+				}
+			}
+		});
+	});
+	*/
+	//Leaderboard Load Function
+	$(document).ready(function(){
+		$.ajax({
+			type: "POST",
+			url: 'assets/php/Leaderboard.php',
+			data: '',
+			dataType: 'json',
+			success: function(data){
+				//$('#leaderboard tr:last').after('<tr><td>Your Scores</td></tr>');
+				var i;
+				for (i=0; i<data.length(); i++){				
+					$('#leaderboard tr:last').after('<tr><td>' + data[0] + '</td><td>' + data[1] + '</td></tr>');
+				}
+			}
+		});
+	});
+	</script>
+	
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+	
 	<script src="assets/js/classie.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
     <script src="assets/js/smoothscroll.js"></script>
