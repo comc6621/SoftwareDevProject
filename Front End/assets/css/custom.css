@@ -1,0 +1,19 @@
+#leaderboard{
+	color: white;
+	border: 1px solid white;
+	float: none;
+	margin: 0px auto;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+#leaderboard th, #userScores th{
+	padding: 10px;
+}
+
+#userScores{
+	display: none;
+	color: white;
+	border: 1px solid white;
+	float: none;
+	margin: 0px auto;
+}
