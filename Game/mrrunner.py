@@ -100,6 +100,10 @@ speedup_timer = 0
 bomb_count = 3
 max_bombs = 3
 
+
+# A variable used to fake the database update
+faking = False
+
 # Necessary to reset the variables for consecutive gameplay
 def setVars():
     global playerXPos, meteors, bombs, points, speedups,shrapnel, player_direction, score, time, distance, background_location
@@ -232,9 +236,9 @@ def movePlayer():
     for meteor in meteors:
         meteor[1] += options.meteor_speed
     for speedup in speedups:
-        speedup[1] += options.speedup_speed
+        speedup[1] += options.meteor_speed
     for bomb in bombs:
-        bomb[1] += options.bomb_speed
+        bomb[1] += options.meteor_speed
     
     i=0
     for piece in shrapnel:
@@ -370,7 +374,7 @@ def updateleaderboard():
 
 
 def leaderboard():
-    global game_exit
+    global game_exit, faking
     tup = updateleaderboard()
     mylist=[]
     count=1
